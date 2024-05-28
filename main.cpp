@@ -22,6 +22,16 @@ void loadLengthFromFile(int& length_line)
 }
 
 
+void saveLengthToFile(int length_line) {
+	std::ofstream settingsFile("settings.txt");
+
+	if (settingsFile.is_open()) {
+		settingsFile << length_line;
+		settingsFile.close();
+	}
+}
+
+
 std::string generateRandomString(int length) {
 	std::string randomString;
 
@@ -34,7 +44,7 @@ std::string generateRandomString(int length) {
 }
 
 
-void clearConsole()
+static void clearConsole()
 {
 	std::cout << "\033[2J\033[1;1H";
 }
@@ -58,6 +68,23 @@ int main()
 
 
 		clearConsole();
+
+
+		std::cout << "Enter the displayed string: ";
+
+
+		std::string userInput;
+		std::cin >> userInput;
+
+		if (userInput == line) {
+			++length_line;
+		}
+		else if(length_line > 1) {
+			--length_line;
+		}
+
+
+		saveLengthToFile(length_line);
 	}
 
 
