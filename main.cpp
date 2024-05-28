@@ -7,6 +7,12 @@
 #include <ctime>
 
 
+const std::string ANSI_BLUE = "\033[34m";
+const std::string ANSI_GREEN = "\033[32m";
+const std::string ANSI_YELLOW = "\033[33m";
+const std::string ANSI_RESET = "\033[0m";
+
+
 void loadSettingsFromFile(int& length_line, float& coffnt, std::string& charset)
 {
 	std::ifstream settingsFile("settings.txt");
@@ -50,6 +56,24 @@ std::string generateRandomString(int length, const std::string& charset) {
 }
 
 
+std::string getRandomColor()
+{
+	int colorCode = std::rand() % 3;
+
+	switch (colorCode) {
+	case 0:
+		return ANSI_BLUE;
+	case 1:
+		return ANSI_GREEN;
+	case 2:
+		return ANSI_YELLOW;
+	default:
+		return ANSI_RESET;
+
+	}
+}
+
+
 static void clearConsole()
 {
 	std::cout << "\033[2J\033[1;1H";
@@ -59,7 +83,7 @@ static void clearConsole()
 int main()
 {
 	std::srand(std::time(nullptr));
-	int length_line; 
+	int length_line;
 	float coffnt;
 	std::string charset;
 
@@ -67,8 +91,14 @@ int main()
 
 	while (true) {
 		std::string line = generateRandomString(length_line, charset);
-		std::cout << line << std::endl;
+
+		for (char ch : line) {
+			std::cout << getRandomColor() << ch;
+		}
+
+		std::cout << ANSI_RESET << std::endl;
 		
+
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((length_line * 1.5 + length_line) * 1000)));
 
@@ -76,7 +106,7 @@ int main()
 		clearConsole();
 
 
-		std::cout << "Enter the displayed string: ";
+		std::cout << "Enter the displayed string (or type 'exit' to quit): ";
 
 
 		std::string userInput;
@@ -91,7 +121,7 @@ int main()
 		if (userInput == line) {
 			++length_line;
 		}
-		else if(length_line > 1) {
+		else if (length_line > 1) {
 			--length_line;
 		}
 
