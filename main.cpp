@@ -34,6 +34,12 @@ std::string generateRandomString(int length) {
 }
 
 
+void clearConsole()
+{
+	std::cout << "\033[2J\033[1;1H";
+}
+
+
 int main()
 {
 	// srand initialization
@@ -51,7 +57,7 @@ int main()
 		std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((length_line * 1.5 + length_line) * 1000)));
 
 
-		
+		clearConsole();
 	}
 
 
