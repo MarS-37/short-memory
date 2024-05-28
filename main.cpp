@@ -59,7 +59,7 @@ int main()
 
 	loadLengthFromFile(length_line);
 
-	while (false) {
+	while (true) {
 		std::string line = generateRandomString(length_line);
 		std::cout << line << std::endl;
 
@@ -75,6 +75,12 @@ int main()
 
 		std::string userInput;
 		std::cin >> userInput;
+
+		if (userInput == "exit") {
+			std::cout << "Exiting the program..." << std::endl;
+			break;
+		}
+
 
 		if (userInput == line) {
 			++length_line;
