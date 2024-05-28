@@ -7,26 +7,31 @@
 #include <ctime>
 
 
-void loadLengthFromFile(int& length_line)
+void loadSettingsFromFile(int& length_line, float& coffnt, std::string& charset)
 {
 	std::ifstream settingsFile("settings.txt");
 
 	if (settingsFile.is_open()) {
-		settingsFile >> length_line;
+		settingsFile >> length_line >> coffnt;
+		settingsFile.ignore();
+		std::getline(settingsFile, charset);
 		settingsFile.close();
 	}
 	else {
-		// default value if the file doesn't exist
 		length_line = 1;
+		coffnt = 1.5;
+		charset = "1234567890";
 	}
 }
 
 
-void saveLengthToFile(int length_line) {
+void saveSettingsToFile(int length_line, float cofnt, const std::string& charset) {
 	std::ofstream settingsFile("settings.txt");
 
 	if (settingsFile.is_open()) {
-		settingsFile << length_line;
+		settingsFile << length_line << std::endl;
+		settingsFile << cofnt << std::endl;
+		settingsFile << charset << std::endl;
 		settingsFile.close();
 	}
 }
@@ -53,13 +58,12 @@ static void clearConsole()
 
 int main()
 {
-	// srand initialization
 	std::srand(std::time(nullptr));
-	// random string length
 	int length_line; 
-	std::string charset = "AdNbGtRe%369:?\";";
+	float coffnt;
+	std::string charset;
 
-	loadLengthFromFile(length_line);
+	loadSettingsFromFile(length_line, coffnt, charset);
 
 	while (true) {
 		std::string line = generateRandomString(length_line, charset);
@@ -92,7 +96,7 @@ int main()
 		}
 
 
-		saveLengthToFile(length_line);
+		saveSettingsToFile(length_line, coffnt, charset);
 	}
 
 
