@@ -56,22 +56,22 @@ std::string generateRandomString(int length, const std::string& charset) {
 }
 
 
-std::string getRandomColor()
-{
-	int colorCode = std::rand() % 3;
-
-	switch (colorCode) {
-	case 0:
-		return ANSI_BLUE;
-	case 1:
-		return ANSI_GREEN;
-	case 2:
-		return ANSI_YELLOW;
-	default:
-		return ANSI_RESET;
-
-	}
-}
+//std::string getRandomColor()
+//{
+//	int colorCode = std::rand() % 3;
+//
+//	switch (colorCode) {
+//	case 0:
+//		return ANSI_BLUE;
+//	case 1:
+//		return ANSI_GREEN;
+//	case 2:
+//		return ANSI_YELLOW;
+//	default:
+//		return ANSI_RESET;
+//
+//	}
+//}
 
 
 static void clearConsole()
@@ -82,19 +82,30 @@ static void clearConsole()
 
 int main()
 {
+	setlocale(LC_ALL, "");
+
+
 	std::srand(std::time(nullptr));
+
+
 	int length_line;
 	float coffnt;
 	std::string charset;
 
+
 	loadSettingsFromFile(length_line, coffnt, charset);
 
+
 	while (true) {
+		std::cout << "Для выхода введите \"exit\"" << std::endl;
+		std::cout << "( " << length_line << " ) " << "Запомните случайную строку: ";
+
 		std::string line = generateRandomString(length_line, charset);
 
 		for (char ch : line) {
-			std::cout << getRandomColor() << ch;
+			std::cout << /*getRandomColor() <<*/ ch;
 		}
+		
 
 		std::cout << ANSI_RESET << std::endl;
 		
@@ -105,8 +116,8 @@ int main()
 
 		clearConsole();
 
-
-		std::cout << "Enter the displayed string (or type 'exit' to quit): ";
+		std::cout << "Для выхода введите \"exit\"" << std::endl;
+		std::cout << " ( " << length_line << " ) " << "Введите запомненую строку ";
 
 
 		std::string userInput;
