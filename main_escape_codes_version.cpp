@@ -1,4 +1,11 @@
-#include <windows.h>
+/*
+Для включения поддержки ANSI escape codes в Windows консоли можно использовать следующие шаги:
+
+1. Откройте командную строку (Command Prompt).
+2. Введите команду: reg add HKEY_CURRENT_USER\Console /v VirtualTerminalLevel /t REG_DWORD /d 1
+3. Закройте и снова откройте командную строку.
+*/
+
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
@@ -8,16 +15,10 @@
 #include <ctime>
 
 
-const int COLOR_BLUE	= 1;
-const int COLOR_GREEN	= 2;
-const int COLOR_YELLOW	= 6;
-const int COLOR_RESET	= 7;
-
-
-void setConsoleColor(int color)
-{
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
-}
+const std::string ANSI_BLUE		= "\033[34m";
+const std::string ANSI_GREEN	= "\033[32m";
+const std::string ANSI_YELLOW	= "\033[33m";
+const std::string ANSI_RESET	= "\033[0m";
 
 
 void loadSettingsFromFile(int& length_line, float& coffnt, std::string& charset)
@@ -25,42 +26,27 @@ void loadSettingsFromFile(int& length_line, float& coffnt, std::string& charset)
 	std::ifstream settingsFile("settings.cfg");
 
 	if (settingsFile.is_open()) {
-		std::string line;
-		try {
-			std::getline(settingsFile, line);
-			length_line = std::stoi(line);
-			std::getline(settingsFile, line);
-			coffnt = std::stof(line);
-			std::getline(settingsFile, charset);
-		}
-		catch (const std::invalid_argument& e) {
-			std::cerr << &e << "Invalid format in settings file. Using default settings." << std::endl;
-			length_line = 1;
-			coffnt = 1.1f;
-			charset = "1234567890-_=+\\|/`~qwertyuiop[]QWERTYUIOP{}asdfghjkl;\'ASDFGHJKL:\"zxcvbnmZXCVBNM<>?,.";
-		}
-
+		settingsFile >> length_line >> coffnt;
+		settingsFile.ignore();
+		std::getline(settingsFile, charset);
 		settingsFile.close();
 	}
 	else {
 		length_line = 1;
-		coffnt = 1.1f;
-		charset = "1234567890-_=+\\|/`~qwertyuiop[]QWERTYUIOP{}asdfghjkl;\'ASDFGHJKL:\"zxcvbnmZXCVBNM<>?,.";
+		coffnt = 0.8;
+		charset = "1234567890";
 	}
 }
 
 
-void saveSettingsToFile(int length_line, float coffnt, const std::string& charset) {
+void saveSettingsToFile(int length_line, float cofnt, const std::string& charset) {
 	std::ofstream settingsFile("settings.cfg");
 
 	if (settingsFile.is_open()) {
 		settingsFile << length_line << std::endl;
-		settingsFile << coffnt << std::endl;
+		settingsFile << cofnt << std::endl;
 		settingsFile << charset << std::endl;
 		settingsFile.close();
-	}
-	else {
-		std::cerr << "Unable to open settings file for writing." << std::endl;
 	}
 }
 
@@ -78,16 +64,29 @@ std::string generateRandomString(int length, const std::string& charset) {
 }
 
 
-int getRandomColor() {
-	int colors[] = { COLOR_BLUE, COLOR_GREEN, COLOR_YELLOW };
+/*
+std::string getRandomColor()
+{
+	int colorCode = std::rand() % 3;
 
-	return colors[std::rand() % 3];
+	switch (colorCode) {
+	case 0:
+		return ANSI_BLUE;
+	case 1:
+		return ANSI_GREEN;
+	case 2:
+		return ANSI_YELLOW;
+	default:
+		return ANSI_RESET;
+
+	}
 }
+*/
 
 
 static void clearConsole()
 {
-	system("cls");
+	std::cout << "\033[2J\033[1;1H";
 }
 
 
@@ -107,25 +106,20 @@ int main()
 	loadSettingsFromFile(length_line, coffnt, charset);
 
 
-	while (true) 
-	{
+	while (true) {
 		clearConsole();
-		
-				
+
 		std::cout << "Для выхода введите \"exit\"" << std::endl;
 		std::cout << "<" << length_line << "> " << "Запомните случайную строку: ";
 
 		std::string line = generateRandomString(length_line, charset);
 
 		for (char ch : line) {
-			if ((ch > 64 && ch < 91) || (ch > 96 && ch < 123)) {
-				setConsoleColor(COLOR_YELLOW);
-			}
-
-			std::cout <<  ch;
-			setConsoleColor(COLOR_RESET);
+			std::cout << /* getRandomColor() << */ ch;
 		}
 		
+
+		std::cout << ANSI_RESET << std::endl;
 		
 		std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>((length_line * 1.5 + length_line) * 1000)));
 
@@ -152,9 +146,9 @@ int main()
 		}
 
 
-		saveSettingsToFile(length_line, coffnt, charset);		
+		saveSettingsToFile(length_line, coffnt, charset);
 	}
-	
+
 
 	return 0;
 }
